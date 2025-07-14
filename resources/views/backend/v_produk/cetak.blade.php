@@ -1,104 +1,57 @@
-<style>
-    /* Styling untuk seluruh tabel */
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 20px 0;
-        font-size: 16px;
-        color: #333;
-    }
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Produk</title>
+    @vite('resources/css/app.css') {{-- Tailwind dari Vite --}}
+</head>
+<body class="bg-gray-100 text-gray-800">
 
-    /* Gaya untuk baris dan kolom header */
-    table th {
-        background-color: #6c7ae0;
-        color: #ffffff;
-        font-weight: bold;
-        text-align: left;
-        padding: 12px;
-        border-bottom: 2px solid #ddd;
-    }
+    <div class="px-4 sm:px-6 lg:px-8 py-6">
+        <div class="mb-6 text-sm sm:text-base text-gray-700">
+            <p class="font-semibold text-lg mb-2">Perihal: {{ $judul }}</p>
+            <p>Tanggal Awal: {{ $tanggalAwal }} s/d Tanggal Akhir: {{ $tanggalAkhir }}</p>
+        </div>
 
-    /* Gaya untuk sel data */
-    table td {
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-    }
+        <div class="overflow-x-auto">
+            <table class="min-w-full border-collapse text-sm text-gray-700 bg-white shadow-md rounded-lg">
+                <thead>
+                    <tr class="bg-indigo-600 text-white text-left">
+                        <th class="px-4 py-3 border-b border-gray-300">No</th>
+                        <th class="px-4 py-3 border-b border-gray-300">Kategori</th>
+                        <th class="px-4 py-3 border-b border-gray-300">Status</th>
+                        <th class="px-4 py-3 border-b border-gray-300">Nama Produk</th>
+                        <th class="px-4 py-3 border-b border-gray-300">Harga</th>
+                        <th class="px-4 py-3 border-b border-gray-300">Stok</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($cetak as $row)
+                        <tr class="hover:bg-gray-100">
+                            <td class="px-4 py-2 border-b border-gray-200 whitespace-nowrap">{{ $loop->iteration }}</td>
+                            <td class="px-4 py-2 border-b border-gray-200 whitespace-nowrap">{{ $row->kategori->nama_kategori }}</td>
+                            <td class="px-4 py-2 border-b border-gray-200 whitespace-nowrap">
+                                @if ($row->status == 1)
+                                    Publis
+                                @elseif ($row->status == 0)
+                                    Blok
+                                @endif
+                            </td>
+                            <td class="px-4 py-2 border-b border-gray-200 whitespace-nowrap">{{ $row->nama_produk }}</td>
+                            <td class="px-4 py-2 border-b border-gray-200 whitespace-nowrap">Rp. {{ number_format($row->harga, 0, ',', '.') }}</td>
+                            <td class="px-4 py-2 border-b border-gray-200 whitespace-nowrap">{{ $row->stok }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-    /* Hover effect untuk baris */
-    table tbody tr:hover {
-        background-color: #f3f3f9;
-    }
-
-    /* Gaya untuk sel dan header pertama */
-    table td:first-child,
-    table th:first-child {
-        border-left: 1px solid #ddd;
-    }
-
-    /* Gaya untuk sel dan header terakhir */
-    table td:last-child,
-    table th:last-child {
-        border-right: 1px solid #ddd;
-    }
-
-    /* Gaya khusus untuk header */
-    .table-header {
-        font-size: 18px;
-        font-weight: bold;
-        color: #555;
-        padding: 20px;
-    }
-</style>
-
-<table>
-    <tr>
-        <td class="table-header">
-            Perihal: {{ $judul }} <br>
-            Tanggal Awal: {{ $tanggalAwal }} s/d Tanggal Akhir: {{ $tanggalAkhir }}
-        </td>
-    </tr>
-</table>
-
-<p></p>
-
-<table>
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>Kategori</th>
-            <th>Status</th>
-            <th>Nama Produk</th>
-            <th>Harga</th>
-            <th>Stok</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($cetak as $row)
-            <tr>
-                <td>{{ $loop->iteration }}</td>
-                <td>{{ $row->kategori->nama_kategori }}</td>
-                <td>
-                    @if ($row->status == 1)
-                        Publis
-                    @elseif ($row->status == 0)
-                        Blok
-                    @endif
-                </td>
-                <td>{{ $row->nama_produk }}</td>
-                <td>Rp. {{ number_format($row->harga, 0, ',', '.') }}</td>
-                <td>{{ $row->stok }}</td>
-            </tr>
-        @endforeach
-    </tbody>
-</table>
-
-<script>
-    window.onload = function() {
-        printStruk();
-    }
-
-    function printStruk() {
-        window.print();
-    }
-</script>
-
+    <script>
+        window.onload = function () {
+            window.print();
+        };
+    </script>
+</body>
+</html>

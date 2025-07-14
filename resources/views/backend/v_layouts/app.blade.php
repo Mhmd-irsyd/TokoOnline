@@ -1,299 +1,204 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" class="bg-gray-100">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('image/icon_univ_bsi.png') }}">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>tokoonline</title>
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('backend/extra-libs/multicheck/multicheck.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/libs/datatables.net-bs4/css/dataTables.bootstrap4.css') }}">
-    <link rel="stylesheet" href="{{ asset('backend/dist/css/style.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/custom-style.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/beranda-style.css') }}">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    <link rel="icon" type="image/png" href="{{ asset('image/icon_univ_bsi.png') }}" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <!-- Preloader -->
-    <div class="preloader">
-        <div class="lds-ripple">
-            <div class="lds-pos"></div>
-            <div class="lds-pos"></div>
+<body class="min-h-screen flex flex-col text-gray-800">
+
+<!-- Navbar -->
+<header class="bg-gray-800 text-white shadow-md">
+    <div class="max-w-7xl mx-auto flex items-center justify-between px-4 py-3 h-16">
+        <div class="flex items-center space-x-3">
+            <!-- Tombol Sidebar -->
+            <button class="sidebar-toggle focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                     viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <a href="{{ route('backend.beranda') }}" class="flex items-center space-x-2">
+                <img src="{{ asset('image/icon_univ_bsi.png') }}" class="h-8 w-8" />
+                <img src="{{ asset('image/logo_text.png') }}" class="h-6 hidden md:block" />
+            </a>
+        </div>
+
+        <!-- User Dropdown -->
+        <div class="relative">
+            <button onclick="toggleDropdown()" class="focus:outline-none">
+                <img src="{{ Auth::user()->foto ? asset('storage/img-user/' . Auth::user()->foto) : asset('storage/img-user/img-default.jpg') }}"
+                     alt="User" class="h-8 w-8 rounded-full" />
+            </button>
+            <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow-lg hidden z-10">
+                <a href="{{ route('backend.user.edit', Auth::user()->id) }}" class="block px-4 py-2 hover:bg-gray-100">Profil Saya</a>
+                <form action="{{ route('backend.logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-100">Keluar</button>
+                </form>
+            </div>
         </div>
     </div>
+</header>
 
-    <!-- Main Wrapper -->
-    <div id="main-wrapper">
-        <!-- Topbar header -->
-        <header class="topbar" data-navbarbg="skin5">
-            <nav class="navbar top-navbar navbar-expand-md navbar-dark">
-                <div class="navbar-header" data-logobg="skin5">
-                    <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)">
-                        <i class="ti-menu ti-close"></i>
-                    </a>
+<!-- Wrapper -->
+<div class="flex flex-1 overflow-hidden relative">
 
-                    <!-- Logo -->
-                    <a class="navbar-brand" href="index.html">
-                        <b class="logo-icon p-l-10">
-                            <img src="{{ asset('image/icon_univ_bsi.png') }}" alt="homepage" class="light-logo" />
-                        </b>
-                        <span class="logo-text">
-                            <img src="{{ asset('image/logo_text.png') }}" alt="homepage" class="light-logo" />
-                        </span>
-                    </a>
+    <!-- Sidebar -->
+   <aside id="sidebar" class="fixed z-40 top-0 left-0 h-full w-64 bg-white border-r transform transition-transform duration-300 ease-in-out shadow-lg -translate-x-full">
 
-                    <a class="topbartoggler d-block d-md-none waves-effect waves-light" href="javascript:void(0)" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                        <i class="ti-more"></i>
-                    </a>
-                </div>
-
-                <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
-                    <ul class="navbar-nav float-left mr-auto">
-                        <li class="nav-item d-none d-md-block">
-                            <a class="nav-link sidebartoggler waves-effect waves-light" href="javascript:void(0)" data-sidebartype="mini-sidebar">
-                                <i class="mdi mdi-menu font-24"></i>
-                            </a>
-                        </li>
-                    </ul>
-
-                    <ul class="navbar-nav float-right">
-                    <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        @if (Auth::user()->foto)
-            <img src="{{ asset('storage/img-user/' . Auth::user()->foto) }}" alt="user" class="rounded-circle" width="31">
-        @else
-            <img src="{{ asset('storage/img-user/img-default.jpg') }}" alt="user" class="rounded-circle" width="31">
-        @endif
-    </a>
-    <div class="dropdown-menu dropdown-menu-right user-dd animated">
-        <a class="dropdown-item" href="{{ route('backend.user.edit', Auth::user()->id) }}">
-            <i class="ti-user m-r-5 m-l-5"></i> Profil Saya
-        </a>
-        <a class="dropdown-item" href="" onclick="event.preventDefault(); document.getElementById('keluar-app').submit();">
-            <i class="fa fa-power-off m-r-5 m-l-5"></i> Keluar
-        </a>
-        <div class="dropdown-divider"></div>
-    </div>
-</li>
-                    </ul>
-                </div>
-            </nav>
-        </header>
-
-        <!-- Left Sidebar -->
-        <aside class="left-sidebar" data-sidebarbg="skin5">
-            <div class="scroll-sidebar">
-                <nav class="sidebar-nav">
-                    <ul id="sidebarnav" class="p-t-30">
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ route('backend.beranda') }}" aria-expanded="false">
-                                <i class="mdi mdi-view-dashboard"></i><span class="hide-menu">Beranda</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-                            <a class="sidebar-link waves-effect waves-dark sidebar-link" href="{{ route('backend.user.index') }}" aria-expanded="false">
-                                <i class="mdi mdi-account"></i><span class="hide-menu">User</span>
-                            </a>
-                        </li>
-                        <li class="sidebar-item">
-    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
-        <i class="mdi mdi-shopping"></i><span class="hide-menu">Data Produk</span>
-    </a>
-    <ul aria-expanded="false" class="collapse first-level">
-        <li class="sidebar-item">
-            <a href="{{ route('backend.kategori.index') }}" class="sidebar-link">
-                <i class="mdi mdi-chevron-right"></i>
-                <span class="hide-menu">Kategori</span>
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="{{ route('backend.produk.index') }}" class="sidebar-link">
-                <i class="mdi mdi-chevron-right"></i>
-                <span class="hide-menu">Produk</span>
-            </a>
-        </li>
-    </ul>
-</li>
-
-<li class="sidebar-item">
-    <a class="sidebar-link has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false">
-        <i class="mdi mdi-receipt"></i><span class="hide-menu">Laporan</span>
-    </a>
-    <ul aria-expanded="false" class="collapse first-level">
-        <li class="sidebar-item">
-            <a href="{{ route('backend.laporan.formuser') }}" class="sidebar-link">
-                <i class="mdi mdi-chevron-right"></i>
-                <span class="hide-menu">User</span>
-            </a>
-        </li>
-        <li class="sidebar-item">
-            <a href="{{ route('backend.laporan.formproduk') }}" class="sidebar-link">
-                <i class="mdi mdi-chevron-right"></i>
-                <span class="hide-menu">Produk</span>
-            </a>
-        </li>
-    </ul>
-</li>
-
-                    
-                </nav>
+        <div class="flex items-center justify-between px-4 py-3 h-16 bg-gray-800 text-white">
+            <div class="flex items-center space-x-3">
+                <img src="{{ asset('image/icon_univ_bsi.png') }}" class="h-8 w-8" alt="Logo" />
+                <span class="text-base font-semibold">Toko Online</span>
             </div>
-        </aside>
+           <!-- Tombol Close Sidebar -->
+<button class="sidebar-toggle focus:outline-none">
+    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 18L18 6M6 6l12 12" />
+    </svg>
+</button>
+        </div>
 
-        <!-- Page Wrapper -->
-        <div class="page-wrapper">
-            <!-- Breadcrumb -->
-            <div class="page-breadcrumb">
-                <div class="row">
-                    <div class="col-12 d-flex no-block align-items-center">
-                        <h4 class="page-title">Tables</h4>
-                        <div class="ml-auto text-right">
-                            <nav aria-label="breadcrumb">
-                                <ol class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="#">Home</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page">Library</li>
-                                </ol>
-                            </nav>
-                        </div>
+        <!-- Navigasi -->
+        <nav class="space-y-2 text-sm p-4 pt-4">
+            <a href="{{ route('backend.beranda') }}"
+               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-all
+                      {{ request()->routeIs('backend.beranda') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                     viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12l2-2m0 0l7-7 7 7m-9 2v6m4-6v6m-4 0h4" />
+                </svg>
+                <span>Beranda</span>
+            </a>
+
+            <a href="{{ route('backend.user.index') }}"
+               class="flex items-center space-x-3 px-3 py-2 rounded-lg transition-all
+                      {{ request()->routeIs('backend.user.index') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700' }}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                     viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5.121 17.804A4 4 0 019 16h6a4 4 0 013.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>User</span>
+            </a>
+
+            <details class="group">
+                <summary
+                    class="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-all
+                           {{ request()->is('backend/kategori*') || request()->is('backend/produk*') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700' }}">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                             viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3h18v4H3zM3 9h18v4H3zM3 15h18v6H3z" />
+                        </svg>
+                        <span>Data Produk</span>
                     </div>
+                    <svg class="w-4 h-4 transition-transform duration-300 group-open:rotate-90"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 5l7 7-7 7" />
+                    </svg>
+                </summary>
+                <div class="pl-10 mt-1 space-y-1 text-sm text-gray-600">
+                    <a href="{{ route('backend.kategori.index') }}"
+                       class="block hover:text-blue-600 {{ request()->routeIs('backend.kategori.index') ? 'text-blue-700 font-semibold' : '' }}">Kategori</a>
+                    <a href="{{ route('backend.produk.index') }}"
+                       class="block hover:text-blue-600 {{ request()->routeIs('backend.produk.index') ? 'text-blue-700 font-semibold' : '' }}">Produk</a>
                 </div>
-            </div>
+            </details>
 
-            <!-- Container Fluid -->
-            <div class="container-fluid">
-                @yield('content')
-                
-            </div>
+            <details class="group">
+                <summary
+                    class="flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-all
+                           {{ request()->is('backend/laporan*') ? 'bg-blue-100 text-blue-700 font-semibold' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-700' }}">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8"
+                             viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16v16H4zM8 4v16" />
+                        </svg>
+                        <span>Laporan</span>
+                    </div>
+                    <svg class="w-4 h-4 transition-transform duration-300 group-open:rotate-90"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 5l7 7-7 7" />
+                    </svg>
+                </summary>
+                <div class="pl-10 mt-1 space-y-1 text-sm text-gray-600">
+                    <a href="{{ route('backend.laporan.formuser') }}"
+                       class="block hover:text-blue-600 {{ request()->routeIs('backend.laporan.formuser') ? 'text-blue-700 font-semibold' : '' }}">User</a>
+                    <a href="{{ route('backend.laporan.formproduk') }}"
+                       class="block hover:text-blue-600 {{ request()->routeIs('backend.laporan.formproduk') ? 'text-blue-700 font-semibold' : '' }}">Produk</a>
+                </div>
+            </details>
+        </nav>
+    </aside>
 
-            <!-- Footer -->
-            <footer class="footer text-center">
-                Web Programming. Studi Kasus Toko Online 
-                <a href="https://bsi.ac.id/">Kuliah..? BSI Aja !!!</a>
-            </footer>
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold">Tables</h1>
+            <nav class="text-sm text-gray-500 space-x-1">
+                <a href="#" class="hover:underline">Home</a>
+                <span>/</span>
+                <span class="text-gray-600">Library</span>
+            </nav>
         </div>
-    </div>
 
-    <!-- Scripts -->
-    <script src="{{ asset('backend/libs/jquery/dist/jquery.min.js') }}"></script>
-<!-- Bootstrap tether Core JavaScript -->
-<script src="{{ asset('backend/libs/popper.js/dist/umd/popper.min.js') }}"></script>
-<script src="{{ asset('backend/libs/bootstrap/dist/js/bootstrap.min.js') }}"></script>
-<!-- Slimscrollbar scrollbar JavaScript -->
-<script src="{{ asset('backend/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js') }}"></script>
-<script src="{{ asset('backend/extra-libs/sparkline/sparkline.js') }}"></script>
-<!-- Wave Effects -->
-<script src="{{ asset('backend/dist/js/waves.js') }}"></script>
-<!-- Menu sidebar -->
-<script src="{{ asset('backend/dist/js/sidebarmenu.js') }}"></script>
-<!-- Custom JavaScript -->
-<script src="{{ asset('backend/dist/js/custom.min.js') }}"></script>
-<!-- This page js -->
-<script src="{{ asset('backend/extra-libs/multicheck/datatable-checkbox-init.js') }}"></script>
-<script src="{{ asset('backend/extra-libs/multicheck/jquery.multicheck.js') }}"></script>
-<script src="{{ asset('backend/extra-libs/DataTables/datatables.min.js') }}"></script>
+        <div class="bg-white shadow rounded-lg p-6">
+            @yield('content')
+        </div>
+    </main>
+</div>
 
+<!-- Footer -->
+<footer class="bg-gray-200 text-center text-sm py-4">
+    Web Programming. Studi Kasus Toko Online — <a href="https://bsi.ac.id/" class="text-blue-600 hover:underline">Kuliah..? BSI Aja !!!</a>
+</footer>
+
+<!-- Script -->
 <script>
-/****************************************
-* Basic Table *
-****************************************/
-$(document).ready(function() {
-    $('#zero_config').DataTable();
-});
-</script>
+   document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("sidebar");
+    const sidebarToggleButtons = document.querySelectorAll(".sidebar-toggle");
 
-<!-- Form Keluar Aplikasi -->
-<form id="keluar-app" action="{{ route('backend.logout') }}" method="POST" class="d-none">
-    @csrf
-</form>
-<!-- Form Keluar Aplikasi End -->
-
-<!-- SweetAlert -->
-<script src="{{ asset('sweetalert/sweetalert2.all.min.js') }}"></script>
-<!-- SweetAlert End -->
-
-<!-- Konfirmasi Success -->
-@if (session('success'))
-<script>
-    Swal.fire({
-        icon: 'success',
-        title: 'Berhasil!',
-        text: "{{ session('success') }}"
-    });
-</script>
-@endif
-<!-- Konfirmasi Success End -->
-
-<script type="text/javascript">
-    // Konfirmasi delete
-    $('.show_confirm').click(function(event) {
-        var form = $(this).closest("form");
-        var konfdelete = $(this).data("konf-delete");
-        event.preventDefault();
-        
-        Swal.fire({
-            title: 'Konfirmasi Hapus Data?',
-            html: "Data yang dihapus <strong>" + konfdelete + "</strong> tidak dapat dikembalikan!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, dihapus',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire('Terhapus!', 'Data berhasil dihapus.', 'success')
-                    .then(() => {
-                        form.submit();
-                    });
-            }
+    sidebarToggleButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            sidebar.classList.toggle("-translate-x-full");
         });
     });
-</script>
 
-<script>
-    // previewFoto
-    function previewFoto() {
-        const foto = document.querySelector("input[name='foto']");
-        const fotoPreview = document.querySelector('.foto-preview');
-
-        fotoPreview.style.display = "block";
-
-        const fotoReader = new FileReader();
-        fotoReader.readAsDataURL(foto.files[0]);
-
-        fotoReader.onload = function(fotoEvent) {
-            fotoPreview.src = fotoEvent.target.result;
-            fotoPreview.style.width = '100%';
-        };
+    function toggleDropdown() {
+        const menu = document.getElementById('dropdownMenu');
+        menu.classList.toggle('hidden');
     }
-</script>
 
-<script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
-<!-- Optional: CKEditor CDN -->
-<!-- <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script> -->
-<script>
-    ClassicEditor
-        .create(document.querySelector('#ckeditor'))
-        .catch(error => {
-            console.error(error);
-        });
+    document.addEventListener('click', function (e) {
+        const dropdown = document.getElementById('dropdownMenu');
+        const isInsideDropdown = dropdown && dropdown.contains(e.target);
+        const isDropdownButton = e.target.closest('[onclick="toggleDropdown()"]');
+        if (!isInsideDropdown && !isDropdownButton && dropdown) {
+            dropdown.classList.add('hidden');
+        }
+
+        const isSidebar = sidebar.contains(e.target);
+        const isToggleBtn = e.target.closest(".sidebar-toggle");
+        const isOpen = !sidebar.classList.contains("-translate-x-full");
+
+        // Tutup sidebar jika klik di luar (semua ukuran layar)
+        if (!isSidebar && !isToggleBtn && isOpen) {
+            sidebar.classList.add("-translate-x-full");
+        }
+    });
+
+    window.toggleDropdown = toggleDropdown;
+});
+
 </script>
 
 </body>
 </html>
-
-
-
-
-
-

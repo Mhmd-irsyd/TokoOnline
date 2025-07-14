@@ -1,116 +1,89 @@
 @extends('backend.v_layouts.app')
+
 @section('content')
-<!-- contentAwal -->
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title">{{ $judul }}</h4>
-                    <div class="row">
-                        <!-- Kolom kiri untuk detail produk -->
-                        <div class="col-md-8">
-                            <div class="form-group">
-                                <label>Kategori</label>
-                                <select name="kategori_id" class="form-control @error('kategori_id') is-invalid @enderror" disabled>
-                                    <option value="" selected> - Pilih Kategori - </option>
-                                    @foreach ($kategori as $row)
-                                        <option value="{{ $row->id }}" {{ old('kategori_id', $show->kategori_id) == $row->id ? 'selected' : '' }}>
-                                            {{ $row->nama_kategori }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('kategori_id')
-                                    <span class="invalid-feedback alert-danger" role="alert">{{ $message }}</span>
-                                @enderror
-                            </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="bg-white shadow-md rounded-md overflow-hidden">
+        <div class="p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-6">{{ $judul }}</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Detail Produk -->
+                <div class="md:col-span-2 space-y-4">
+                    {{-- Kategori --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+                        <select name="kategori_id" disabled
+                            class="w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-700 focus:ring focus:ring-indigo-200">
+                            <option value="" selected> - Pilih Kategori - </option>
+                            @foreach ($kategori as $row)
+                                <option value="{{ $row->id }}" {{ old('kategori_id', $show->kategori_id) == $row->id ? 'selected' : '' }}>
+                                    {{ $row->nama_kategori }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                            <div class="form-group">
-                                <label>Nama Produk</label>
-                                <input type="text" name="nama_produk" value="{{ old('nama_produk', $show->nama_produk) }}" class="form-control @error('nama_produk') is-invalid @enderror" placeholder="Masukkan Nama Produk" disabled>
-                                @error('nama_produk')
-                                    <span class="invalid-feedback alert-danger" role="alert">{{ $message }}</span>
-                                @enderror
-                            </div>
+                    {{-- Nama Produk --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Produk</label>
+                        <input type="text" name="nama_produk" value="{{ old('nama_produk', $show->nama_produk) }}" disabled
+                               class="w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-700 focus:ring focus:ring-indigo-200">
+                    </div>
 
-                            <div class="form-group">
-                                <label>Detail</label>
-                                <textarea name="detail" class="form-control @error('detail') is-invalid @enderror" id="ckeditor" disabled>{{ old('detail', $show->detail) }}</textarea>
-                                @error('detail')
-                                    <span class="invalid-feedback alert-danger" role="alert">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <!-- Kolom kanan untuk foto utama dan foto tambahan -->
-                        <div class="col-md-4">
-                            <!-- Foto Utama -->
-                            <div class="form-group">
-                                <label>Foto Utama</label> <br>
-                                <img src="{{ asset('storage/img-produk/' . $show->foto) }}" class="foto-preview" width="100%">
-                            </div>
-
-                            <!-- Foto Tambahan -->
-                            <div class="form-group">
-                                <label>Foto Tambahan</label>
-                                <div id="foto-container">
-                                    <div class="row">
-                                        @foreach($show->gambar as $gambar)
-                                            <div class="col-md-8">
-                                                <img src="{{ asset('storage/img-produk/' . $gambar->foto) }}" width="100%">
-                                            </div>
-                                            <div class="col-md-4">
-                                                <form action="{{ route('backend.foto_produk.destroy', $gambar->id) }}" method="post">
-                                                    @csrf
-                                                    @method('delete')
-                                                    <button type="submit" class="btn btn-danger">Hapus</button>
-                                                </form>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                    <br>
-                                </div>
-                                <button type="button" class="btn btn-primary add-foto mt-2">Tambah Foto</button>
-                            </div>
-                        </div>
+                    {{-- Detail --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Detail</label>
+                        <textarea disabled name="detail"
+                                  class="w-full border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-700 focus:ring focus:ring-indigo-200"
+                                  rows="5">{{ old('detail', $show->detail) }}</textarea>
                     </div>
                 </div>
 
-                <div class="border-top">
-                    <div class="card-body">
-                        <a href="{{ route('backend.produk.index') }}">
-                            <button type="button" class="btn btn-secondary">Kembali</button>
-                        </a>
+                <!-- Foto Produk -->
+                <div class="space-y-6">
+                    {{-- Foto Utama --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Foto Utama</label>
+                        <img src="{{ asset('storage/img-produk/' . $show->foto) }}" alt="Foto Utama"
+                             class="w-full rounded-md shadow object-cover max-h-60">
+                    </div>
+
+                    {{-- Foto Tambahan --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Foto Tambahan</label>
+                        <div class="space-y-4">
+                            @foreach($show->gambar as $gambar)
+                                <div class="flex flex-col sm:flex-row gap-4 items-start">
+                                    <div class="flex-1">
+                                        <img src="{{ asset('storage/img-produk/' . $gambar->foto) }}" alt="Foto Tambahan"
+                                             class="w-full rounded-md shadow object-cover max-h-60">
+                                    </div>
+                                    <form action="{{ route('backend.foto_produk.destroy', $gambar->id) }}" method="post">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="submit"
+                                            class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 text-sm rounded shadow">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- (Jika butuh tambah foto secara manual bisa tambahkan form di sini) --}}
                     </div>
                 </div>
             </div>
         </div>
+
+        {{-- Tombol Kembali --}}
+        <div class="bg-gray-50 px-6 py-4 flex justify-end">
+            <a href="{{ route('backend.produk.index') }}">
+                <button type="button"
+                    class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded shadow text-sm">
+                    Kembali
+                </button>
+            </a>
+        </div>
     </div>
 </div>
-<!-- contentAkhir -->
 @endsection
-
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const fotoContainer = document.getElementById('foto-container');
-        const addFotoButton = document.querySelector('.add-foto');
-
-        addFotoButton.addEventListener('click', function() {
-            const fotoRow = document.createElement('div');
-            fotoRow.classList.add('form-group', 'row');
-            fotoRow.innerHTML = `
-                <form action="{{ route('backend.foto_produk.store') }}" method="post" enctype="multipart/form-data">
-                    @csrf
-                    <div class="col-md-12">
-                        <input type="hidden" name="produk_id" value="{{ $show->id }}">
-                        <input type="file" name="foto_produk[]" class="form-control @error('foto_produk') is-invalid @enderror">
-                        <button type="submit" class="btn btn-success">Simpan</button>
-                    </div>
-                </form>
-            `;
-            fotoContainer.appendChild(fotoRow);
-        });
-    });
-</script>

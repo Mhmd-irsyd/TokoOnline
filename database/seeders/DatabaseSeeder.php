@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             'role' => '0',
             'status' => 1,
             'hp' => '089654619089',
-            'password' => bcrypt('P@55word'),
+            'password' => bcrypt('password'),
         ]);
 
         // Menambahkan data kategori
