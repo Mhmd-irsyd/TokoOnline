@@ -2,7 +2,11 @@
 nixPkgs = ['php82', 'composer', 'nodejs_18', 'npm']
 
 [phases.install]
-cmds = ['composer install --ignore-platform-reqs', 'npm install', 'npm run build']
+cmds = [
+  'composer install --ignore-platform-reqs',
+  'npm install',
+  'npm run build'
+]
 
 [start]
 cmd = "php artisan serve --host=0.0.0.0 --port=8080"
