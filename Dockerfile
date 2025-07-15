@@ -33,7 +33,7 @@ WORKDIR /app
 COPY composer.json composer.lock ./
 
 # Jalankan composer install (akan menemukan Composer yang baru saja diinstal)
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --verbose || exit 1; echo "Composer install failed. Check logs above for details."
 
 # Salin package.json dan package-lock.json untuk caching Node.js
 COPY package.json package-lock.json ./
