@@ -31,7 +31,7 @@ RUN apk add --no-cache \
     php82-json \
     php82-opcache \
     # Bersihkan cache APK setelah instalasi untuk mengurangi ukuran image.
-    && rm -rf /var/cache/apk/*
+    && rm -rf /var/cache/apk/* /tmp/* /usr/share/man /usr/lib/php*/pear
 
 # Unduh dan instal Composer secara global di dalam container.
 # Ini penting agar perintah 'composer' bisa ditemukan.
@@ -50,11 +50,7 @@ COPY . .
 # dan memastikan Composer menggunakan versi dependensi yang spesifik.
 COPY composer.json composer.lock ./
 
-# Jalankan composer install.
-# --no-dev: tidak menginstal dev dependencies.
-# --optimize-autoloader: mengoptimalkan autoloader Laravel.
-# --verbose: memberikan output detail untuk debugging.
-# '|| exit 1; echo ...' untuk menangkap error dan memberikan pesan yang jelas di log Railway.
+
 RUN composer install --no-dev --optimize-autoloader --verbose || exit 1; echo "Composer install failed. Check logs above for details."
 
 # Salin file package.json dan package-lock.json untuk caching Node.js.
@@ -92,25 +88,20 @@ RUN apk add --no-cache \
 
 WORKDIR /app
 
-# Salin file-file yang sudah di-build dari stage 'build' ke stage 'production'.
-# Ini memastikan dependensi PHP dan Node.js, serta aset Vite, sudah ada.
+
 COPY --from=build /app/vendor /app/vendor
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/public/build /app/public/build
 COPY --from=build /app/.env.example /app/.env.example
 
-# Salin sisa file aplikasi dari stage build (kode sumbermu) ke stage produksi.
 COPY --from=build /app /app
 
-# Atur izin direktori storage dan bootstrap/cache agar bisa ditulis oleh web server (www-data).
+
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# Ekspos port tempat aplikasi akan berjalan.
-# Ini harus sesuai dengan pengaturan Port di Railway Settings (yaitu 8080).
+
 EXPOSE 8080
 
-# Perintah untuk menjalankan aplikasi Laravel saat kontainer dimulai.
-# '--host 0.0.0.0' agar bisa diakses dari luar container.
-# '--port 8080' sesuai dengan port yang diekspos di atas.
+
 CMD ["php", "artisan", "serve", "--host", "0.0.0.0", "--port", "8080"]
