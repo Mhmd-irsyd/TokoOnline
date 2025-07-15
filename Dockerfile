@@ -33,6 +33,9 @@ RUN apk add --no-cache \
     # Bersihkan cache APK setelah instalasi untuk mengurangi ukuran image.
     && rm -rf /var/cache/apk/* /tmp/* /usr/share/man /usr/lib/php*/pear
 
+
+RUN echo "extension=pdo_mysql.so" 
+
 # Unduh dan instal Composer secara global di dalam container.
 # Ini penting agar perintah 'composer' bisa ditemukan.
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
