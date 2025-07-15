@@ -1,5 +1,5 @@
 # --- Build Stage ---
-FROM php:8.2-fpm-alpine AS build # Pastikan ini PHP 8.2 atau lebih tinggi
+FROM php:8.2-fpm-alpine AS build
 
 # Install sistem dependencies dan PHP extensions yang dibutuhkan untuk build
 RUN apk add --no-cache \
