@@ -35,7 +35,7 @@ RUN npm install && npm run build
 COPY . .
 
 # --- Production Stage ---
-FROM php:8.2-fpm-alpine AS production # Tetap PHP 8.2 untuk runtime
+FROM php:8.2-fpm-alpine AS production
 
 # Install hanya sistem dependencies dan PHP extensions yang dibutuhkan untuk RUNTIME
 RUN apk add --no-cache \
