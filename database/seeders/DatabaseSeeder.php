@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             'role' => '1',
             'status' => 1,
             'hp' => '081288954050',
-            'password' => bcrypt('P@55word'),
+            'password' => bcrypt('password'),
         ]);
 
         // Menambahkan user Muhammad Irsyad
